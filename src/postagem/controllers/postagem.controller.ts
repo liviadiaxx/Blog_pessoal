@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Put } from "@nestjs/common"; 
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, ParseIntPipe, Post, Put } from "@nestjs/common"; 
 import { Postagem } from "../entites/postagem.entity";
 import { PostagemService } from "../services/postagem.service";
 
@@ -35,5 +35,10 @@ export class PostagemController {
     @HttpCode(HttpStatus.OK)
     update(@Body() postagem: Postagem): Promise<Postagem> {
         return this.postagemService.update(postagem);
+    }
+    @Delete('/:id')
+    @HttpCode(HttpStatus.NO_CONTENT)
+    delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
+        return this.postagemService.delete(id).then(() => {});
     }
 }

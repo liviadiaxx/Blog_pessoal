@@ -2,6 +2,7 @@ import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { ILike, Repository } from "typeorm";
 import { Postagem } from "../entites/postagem.entity";
+import { DeleteResult } from "typeorm/browser";
 
 @Injectable()
 export class PostagemService {
@@ -14,6 +15,7 @@ export class PostagemService {
         return this.postagemRepository.find();
     }
 
+    
     async findById(id: number): Promise<Postagem> {
         const postagem = await this.postagemRepository.findOne({
             where: {
@@ -35,7 +37,6 @@ export class PostagemService {
 
     
     }
-
     async create(postagem: Postagem): Promise<Postagem> {
         return await this.postagemRepository.save(postagem);
     }
@@ -44,4 +45,9 @@ export class PostagemService {
         await this.findById(postagem.id);
         return await this.postagemRepository.save(postagem);
     }
+    async delete(id: number): Promise<DeleteResult> {
+        await this.findById(id);
+        return await this.postagemRepository.delete(id);
+    }
+
 }
