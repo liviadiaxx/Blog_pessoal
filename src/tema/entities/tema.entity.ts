@@ -1,19 +1,16 @@
-import { IsNotEmpty } from "class-validator";
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { Postagem } from "../../postagem/entities/postagem.entity";
+import { IsNotEmpty } from 'class-validator';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Postagem } from '../../postagem/entities/postagem.entity';
 
-
-@Entity( { name: 'tb_temas0' })
+@Entity({ name: 'tb_temas' })
 export class Tema {
-    @PrimaryGeneratedColumn()
-    id: number;
- 
-    @IsNotEmpty()
-   
-    @Column ({ length: 255, nullable: false})
-    descricao: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @OneToMany(() => Postagem, (postagem) => postagem.tema)
-    postagem: Postagem[]
+  @IsNotEmpty()
+  @Column({ length: 255, nullable: false })
+  descricao: string;
+
+  @OneToMany(() => Postagem, (postagem) => postagem.tema)
+  postagem: Postagem[];
 }
-

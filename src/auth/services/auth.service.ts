@@ -1,0 +1,54 @@
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { UsuarioService } from '../../usuario/services/usuario.service';
+import { JwtService } from '@nestjs/jwt';
+import { Bcrypt } from '../bcrypt/bcrypt';
+import { UsuarioLogin } from '../entities/usuariologin.entity';
+import { UsuarioSemSenha } from '../interfaces/interface-sem-senha';
+
+@Injectable()
+export class AuthService {
+  constructor(
+    private usuarioService: UsuarioService,
+    private jwtService: JwtService,
+    private bcrypt: Bcrypt,
+  ) {}
+
+  async validateUser(
+    usuario: string,
+    senha: string,
+  ): Promise<UsuarioSemSenha | null> {
+    const buscaUsuario = await this.usuarioService.findByUsuario(usuario);
+
+    if (!buscaUsuario)
+      throw new HttpException('Usuário não encontrado!', HttpStatus.NOT_FOUND);
+
+    const validaSenha = await this.bcrypt.compararSenhas(
+      senha,
+      buscaUsuario.senha,
+    );
+
+    if (buscaUsuario && validaSenha) {
+      const { senha, ...resposta } = buscaUsuario;
+      return resposta;
+    }
+
+    return null;
+  }
+
+  async login(usuarioLogin: UsuarioLogin) {
+    const payload = { sub: usuarioLogin.usuario };
+
+    const buscaUsuario = await this.usuarioService.findByUsuario(
+      usuarioLogin.usuario,
+    );
+
+    return {
+      id: buscaUsuario?.id,
+      nome: buscaUsuario?.nome,
+      usuario: buscaUsuario?.usuario,
+      senha: '',
+      foto: buscaUsuario?.foto,
+      token: `Bearer ${this.jwtService.sign(payload)}`,
+    };
+  }
+}
